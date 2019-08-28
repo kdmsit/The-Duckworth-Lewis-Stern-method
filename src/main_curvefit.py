@@ -5,6 +5,8 @@ Librarys Used.
 import numpy as np
 import pandas as pd
 import scipy.optimize as sp
+from scipy.optimize import least_squares
+from scipy.optimize import leastsq
 import math
 import matplotlib.pyplot as plt
 # endregion
@@ -21,7 +23,7 @@ def data_preprocessing(match_datas):
     wickets_in_hand    = match_datas['Wickets.in.Hand'].values
     return remaining_runs,remaining_overs,wickets_in_hand,innings_number
 
-def sum_of_squared_errors_loss_function(parameters,args):
+def sum_of_squared_errors_loss_function(parameters,innings_number,runs_scored,remaining_overs,wickets_in_hand):
     '''
     This procedure defines the objective function which I have passed in scipy.optimize.minimize() function.
     It calculated all total squared error loss for all the data points for innings 1.
@@ -31,10 +33,6 @@ def sum_of_squared_errors_loss_function(parameters,args):
     '''
     total_squared_error=0
     l_param=parameters[10]
-    innings_number = args[0]
-    runs_scored=args[1]
-    remaining_overs=args[2]
-    wickets_in_hand=args[3]
     for i in range(len(wickets_in_hand)):
         if innings_number[i] == 1:
             runscored = runs_scored[i]
@@ -55,11 +53,9 @@ def fit_parameters(innings_number,runs_scored,remaining_overs,wickets_in_hand):
     :param wickets_in_hand:
     :return:
     '''
-    parameters = [10, 30, 40, 60, 90, 125, 150, 170, 190, 200,3]
-    optimised_res = sp.minimize(sum_of_squared_errors_loss_function,parameters,
-                      args=[innings_number,runs_scored,remaining_overs,wickets_in_hand],
-                      method='CG')
-    return optimised_res['fun'],optimised_res['x']
+    x0 = np.array([10, 30, 40, 60, 90, 125, 150, 170, 190, 200,3], dtype=float)
+    optimised_res = least_squares(sum_of_squared_errors_loss_function,x0,args=(innings_number,runs_scored,remaining_overs,wickets_in_hand))
+    return optimised_res.cost,optimised_res.x
 
 def plotparam_expectedrunvsoverremains(optparameters):
     '''
@@ -82,7 +78,7 @@ def plotparam_expectedrunvsoverremains(optparameters):
         y_run=optparameters[i] * (1 - np.exp(-optparameters[10] * x /optparameters[i]))
         plt.plot(x, y_run, c=colors[i], label='Z[' + str(i + 1) + ']')
         plt.legend()
-    plt.savefig('parameterplot_expectedrun_vs_overremain_CG.png')
+    plt.savefig('parameterplot_expectedrun_vs_overremain_leastsquare.png')
     plt.close()
 
 
@@ -108,12 +104,11 @@ def plotparam_resourceremainvsoverremains(optparameters):
         y_run=optparameters[i] * (1 - np.exp(-optparameters[10] * x /optparameters[i]))
         plt.plot(x, (y_run/Z5010)*100, c=colors[i], label='Z[' + str(i + 1) + ']')
         plt.legend()
-    plt.savefig('parameterplot_resourceremain_vs_overremain_CG.png')
+    plt.savefig('parameterplot_resourceremain_vs_overremain_leastsquare.png')
     plt.close()
 
 
 if __name__ == "__main__":
-    print("CG")
     match_datas = pd.read_csv('../data/04_cricket_1999to2011.csv')
     runs_to_be_scored,remaining_overs,wickets_in_hand,innings_number=data_preprocessing(match_datas)
     totalloss,optparameters=fit_parameters(innings_number,runs_to_be_scored, remaining_overs, wickets_in_hand)
