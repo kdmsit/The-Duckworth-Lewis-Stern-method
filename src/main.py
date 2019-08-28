@@ -58,23 +58,23 @@ def fit_parameters(innings_number,runs_scored,remaining_overs,wickets_in_hand):
     parameters = [10, 30, 40, 60, 90, 125, 150, 170, 190, 200,3]
     optimised_res = sp.minimize(sum_of_squared_errors_loss_function,parameters,
                       args=[innings_number,runs_scored,remaining_overs,wickets_in_hand],
-                      method='CG')
+                      method='L-BFGS-B')
     return optimised_res['fun'],optimised_res['x']
 
-def plot(optparameters):
+def plotparam_expectedrunvsoverremains(optparameters):
     '''
-    This Procedure will plot the graphs for all parameters.
+    This Procedure will plot the graph of ExpectedRun vs OverRemaining for all parameters.
     :param optparameters:
-    :return:
     '''
     plt.figure(1)
+    plt.title("Expected Runs vs Overs Remaininng")
     plt.xlim((0, 50))
     plt.ylim((0, 250))
     plt.xticks([0, 10, 20, 30, 40, 50])
     plt.yticks([0, 50, 100, 150, 200, 250])
     plt.xlabel('Overs remaining')
     plt.ylabel('Expected Runs')
-    colors = ['r', 'g', 'b', 'y', 'c', 'm', 'k', '#555b65', '#999e45', '#777a55']
+    colors = ['r', 'g', 'b', 'y', 'c', 'm', 'k', '#555b65', '#999e45', '#222a55']
     x=np.zeros((51))
     for i in range(51):
         x[i]=i
@@ -82,8 +82,34 @@ def plot(optparameters):
         y_run=optparameters[i] * (1 - np.exp(-optparameters[10] * x /optparameters[i]))
         plt.plot(x, y_run, c=colors[i], label='Z[' + str(i + 1) + ']')
         plt.legend()
-    plt.savefig('parameterplot_CG.png')
+    plt.savefig('parameterplot_expectedrun_vs_overremain_L-BFGS-B.png')
+    plt.close()
 
+
+def plotparam_resourceremainvsoverremains(optparameters):
+    '''
+        This Procedure will plot the graph of ResourceRemainings vs OverRemaining for all parameters.
+        :param optparameters:
+        '''
+    plt.figure(1)
+    plt.title("Resource Remaining vs Overs Remaininng")
+    plt.xlim((0, 50))
+    plt.ylim((0, 100))
+    plt.xticks([0, 10, 20, 30, 40, 50])
+    plt.yticks([0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100])
+    plt.xlabel('Overs remaining')
+    plt.ylabel('percentage Of Resource Remaining')
+    colors = ['r', 'g', 'b', 'y', 'c', 'm', 'k', '#555b65', '#999e45', '#222a55']
+    x = np.zeros((51))
+    for i in range(51):
+        x[i] = i
+    Z5010=optparameters[9] * (1 - np.exp(-optparameters[10] * 50 /optparameters[9]))
+    for i in range(len(optparameters)-1):
+        y_run=optparameters[i] * (1 - np.exp(-optparameters[10] * x /optparameters[i]))
+        plt.plot(x, (y_run/Z5010)*100, c=colors[i], label='Z[' + str(i + 1) + ']')
+        plt.legend()
+    plt.savefig('parameterplot_resourceremain_vs_overremain_L-BFGS-B.png')
+    plt.close()
 
 
 if __name__ == "__main__":
@@ -96,4 +122,6 @@ if __name__ == "__main__":
             print("L :"+str(optparameters[i]))
         else:
             print("Z["+str(i+1)+"] :"+str(optparameters[i]))
-    plot(optparameters)
+    plotparam_expectedrunvsoverremains(optparameters)
+    plotparam_resourceremainvsoverremains(optparameters)
+    print("Plots are generated.Check source directory for 'parameterplot_resourceremain_vs_overremain_L-BFGS-B.png' and 'parameterplot_expectedrun_vs_overremain_L-BFGS-B.png' ")
