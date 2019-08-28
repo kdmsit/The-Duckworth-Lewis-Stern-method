@@ -58,7 +58,7 @@ def fit_parameters(innings_number,runs_scored,remaining_overs,wickets_in_hand):
     parameters = [10, 30, 40, 60, 90, 125, 150, 170, 190, 200,3]
     optimised_res = sp.minimize(sum_of_squared_errors_loss_function,parameters,
                       args=[innings_number,runs_scored,remaining_overs,wickets_in_hand],
-                      method='L-BFGS-B')
+                      method='COBYLA')
     return optimised_res['fun'],optimised_res['x']
 
 def plotparam_expectedrunvsoverremains(optparameters):
@@ -82,7 +82,7 @@ def plotparam_expectedrunvsoverremains(optparameters):
         y_run=optparameters[i] * (1 - np.exp(-optparameters[10] * x /optparameters[i]))
         plt.plot(x, y_run, c=colors[i], label='Z[' + str(i + 1) + ']')
         plt.legend()
-    plt.savefig('parameterplot_expectedrun_vs_overremain_L-BFGS-B.png')
+    plt.savefig('parameterplot_expectedrun_vs_overremain_COBYLA.png')
     plt.close()
 
 
@@ -108,7 +108,7 @@ def plotparam_resourceremainvsoverremains(optparameters):
         y_run=optparameters[i] * (1 - np.exp(-optparameters[10] * x /optparameters[i]))
         plt.plot(x, (y_run/Z5010)*100, c=colors[i], label='Z[' + str(i + 1) + ']')
         plt.legend()
-    plt.savefig('parameterplot_resourceremain_vs_overremain_L-BFGS-B.png')
+    plt.savefig('parameterplot_resourceremain_vs_overremain_COBYLA.png')
     plt.close()
 
 
