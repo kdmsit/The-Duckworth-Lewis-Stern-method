@@ -53,7 +53,8 @@ def fit_parameters(innings_number,runs_scored,remaining_overs,wickets_in_hand):
     :param wickets_in_hand:
     :return:
     '''
-    x0 = np.array([10, 30, 40, 60, 90, 125, 150, 170, 190, 200,3], dtype=float)
+    #x0 = np.array([10, 30, 40, 60, 90, 125, 150, 170, 190, 200,3], dtype=float)
+    x0 = np.array([10, 30, 40, 60, 90, 125, 150, 170, 190, 200, 10], dtype=float)
     optimised_res = least_squares(sum_of_squared_errors_loss_function,x0,args=(innings_number,runs_scored,remaining_overs,wickets_in_hand))
     return optimised_res.cost,optimised_res.x
 
