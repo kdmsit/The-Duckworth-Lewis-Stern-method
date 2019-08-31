@@ -66,6 +66,7 @@ def plotparam_expectedrunvsoverremains(optparameters):
     '''
     This Procedure will plot the graph of ExpectedRun vs OverRemaining for all parameters.
     :param optparameters:
+    This procedure will save the plot in source directory as "parameterplot_expectedrun_vs_overremain.png"
     '''
     plt.figure(1)
     plt.title("Expected Runs vs Overs Remaininng")
@@ -83,7 +84,8 @@ def plotparam_expectedrunvsoverremains(optparameters):
         y_run=optparameters[i] * (1 - np.exp(-optparameters[10] * x /optparameters[i]))
         plt.plot(x, y_run, c=colors[i], label='Z[' + str(i + 1) + ']')
         plt.legend()
-    plt.savefig('parameterplot_expectedrun_vs_overremain_L-BFGS-B.png')
+    plt.savefig('parameterplot_expectedrun_vs_overremain.png')
+    #plt.show()
     plt.close()
 
 
@@ -91,6 +93,7 @@ def plotparam_resourceremainvsoverremains(optparameters):
     '''
         This Procedure will plot the graph of ResourceRemainings vs OverRemaining for all parameters.
         :param optparameters:
+        This procedure will save the plot in source directory as "parameterplot_resourceremain_vs_overremain.png"
         '''
     plt.figure(1)
     plt.title("Resource Remaining vs Overs Remaininng")
@@ -109,12 +112,13 @@ def plotparam_resourceremainvsoverremains(optparameters):
         y_run=optparameters[i] * (1 - np.exp(-optparameters[10] * x /optparameters[i]))
         plt.plot(x, (y_run/Z5010)*100, c=colors[i], label='Z[' + str(i + 1) + ']')
         plt.legend()
-    plt.savefig('parameterplot_resourceremain_vs_overremain_L-BFGS-B.png')
+    plt.savefig('parameterplot_resourceremain_vs_overremain.png')
+    #plt.show()
     plt.close()
 
 
 if __name__ == "__main__":
-    match_datas = pd.read_csv('../data/04_cricket_1999to2011.csv')
+    match_datas = pd.read_csv('./../data/04_cricket_1999to2011.csv')
     runs_to_be_scored,remaining_overs,wickets_in_hand,innings_number=data_preprocessing(match_datas)
     totalloss,optparameters=fit_parameters(innings_number,runs_to_be_scored, remaining_overs, wickets_in_hand)
     print("TOTAL LOSS ",totalloss)
@@ -123,6 +127,6 @@ if __name__ == "__main__":
             print("L :"+str(optparameters[i]))
         else:
             print("Z["+str(i+1)+"] :"+str(optparameters[i]))
-    plotparam_expectedrunvsoverremains(optparameters)
     plotparam_resourceremainvsoverremains(optparameters)
-    print("Plots are generated.Check source directory for 'parameterplot_resourceremain_vs_overremain_L-BFGS-B.png' and 'parameterplot_expectedrun_vs_overremain_L-BFGS-B.png' ")
+    plotparam_expectedrunvsoverremains(optparameters)
+    print("PLOTS ARE ALSO SAVED IN SOURCE DIRECTORY.Check source directory for 'parameterplot_resourceremain_vs_overremain_L-BFGS-B.png' and 'parameterplot_expectedrun_vs_overremain_L-BFGS-B.png' ")
